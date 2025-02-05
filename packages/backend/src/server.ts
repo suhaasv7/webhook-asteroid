@@ -1,12 +1,21 @@
-// payment-backend/src/server.ts
 import express from 'express';
 import cors from 'cors';
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import { Payment, PaymentData } from './types';
+import dotenv from 'dotenv';
 
+// ENV
+dotenv.config();
+
+// PORT
+const PORT = process.env.PORT;
+
+// Express
 const app = express();
 const server = createServer(app);
+
+// Websocket
 const wss = new WebSocketServer({ server });
 
 // Store payments in memory
@@ -53,7 +62,7 @@ app.post('/api/payment', async (req, res) => {
 
         // Send to payment provider
         try {
-            const response = await fetch('http://localhost:3002/process-payment', {
+            const response = await fetch(`${process.env.PAYMENT_PROVIDER_URL}/process-payment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -62,7 +71,6 @@ app.post('/api/payment', async (req, res) => {
                     paymentId: payment.paymentId,
                     amount,
                     currency,
-                    webhookUrl: 'http://localhost:3001/webhook'
                 })
             });
 
@@ -102,7 +110,11 @@ app.post('/webhook', express.json(), (req, res) => {
     }
 });
 
-const PORT = 3001;
+app.use(cors({
+    origin: process.env.CORS_ORIGIN
+}));
+
+
 server.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);
 });
