@@ -1,11 +1,11 @@
 {
-  "name": "@webhook-backend/client",
+  "name": "@webhook-backend/backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node src/server.js"
   },
   "keywords": [],
   "author": "",
