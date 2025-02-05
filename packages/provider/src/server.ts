@@ -1,7 +1,11 @@
-// mock-payment-provider/src/server.ts
 import express from 'express';
 import cors from 'cors';
 import { PaymentRequest } from './types';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const PORT = process.env.PORT;
+
 
 const app = express();
 
@@ -15,7 +19,7 @@ app.post('/process-payment', (req, res) => {
     setTimeout(async () => {
         try {
             // Call the webhook URL with completed status
-            await fetch(paymentRequest.webhookUrl, {
+            await fetch(`${process.env.BACKEND_URL}/webhook`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -28,12 +32,17 @@ app.post('/process-payment', (req, res) => {
         } catch (error) {
             console.error('Error calling webhook:', error);
         }
-    }, 5000); // Wait 5 seconds
+    }, 2000); 
 
     res.json({ message: 'Payment processing started' });
 });
 
-const PORT = 3002;
+app.use(cors({
+    origin: process.env.CORS_ORIGIN
+}));
+
+
+
 app.listen(PORT, () => {
     console.log(`Payment provider running on port ${PORT}`);
 });
